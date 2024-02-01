@@ -2,7 +2,7 @@ class QuotesController < ApplicationController
   before_action :set_quote, only: [:show, :edit, :update, :destroy]
 
   def index
-    @quotes = Quote.all
+    @quotes = Quote.order(id: :desc)
   end
 
   def show
@@ -10,13 +10,20 @@ class QuotesController < ApplicationController
 
   def new
     @quote = Quote.new
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 
   def create
     @quote = Quote.new(quote_params)
 
     if @quote.save
-      redirect_to quotes_path, notice: "Quote was successfully created."
+      respond_to do |format|
+        format.html { redirect_to quotes_path, notice: "Quote was successfully created." }
+        format.turbo_stream
+      end
     else
       render :new, status: :unprocessable_entity
     end
